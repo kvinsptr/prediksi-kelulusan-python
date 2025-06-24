@@ -1,8 +1,28 @@
-# 🎈 Blank app template
+# 🎓 Prediksi Kelulusan Mahasiswa dengan AI
 
-A simple Streamlit app template for you to modify!
+Aplikasi ini menggunakan algoritma **Random Forest Classifier** untuk memprediksi apakah seorang mahasiswa akan lulus atau tidak, berdasarkan data akademik seperti IPS, IPK, umur, dan status pernikahan.
 
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://blank-app-template.streamlit.apphttps://blank-app-template.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/)
+
+---
+
+## 📋 Fitur Aplikasi
+
+- 📁 Menampilkan dataset kelulusan mahasiswa
+- 📊 Visualisasi interaktif: sebaran IPK, distribusi kelulusan
+- 🧠 Form prediksi kelulusan berdasarkan input pengguna
+- 📈 Evaluasi akurasi model dan visualisasi fitur penting
+
+---
+
+## 🚀 Cara Menjalankan Secara Lokal
+
+1. Clone repositori ini:
+
+   ```bash
+   git clone https://github.com/kvinsptr/prediksi-kelulusan-python.git
+   cd prediksi-kelulusan-python
+
 
 ### How to run it on your own machine
 
