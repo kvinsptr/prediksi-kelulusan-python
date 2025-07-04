@@ -9,10 +9,14 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # --- Konfigurasi halaman ---
-st.set_page_config(page_title="Prediksi Kelulusan Mahasiswa", layout="wide")
+st.set_page_config(page_title="🎓 Prediksi Kelulusan Mahasiswa", layout="wide", page_icon="🎓")
 
-st.markdown("<h1 style='text-align: center;'>🎓 Pemanfaatan AI untuk Prediksi Kelulusan Mahasiswa</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; font-size: 18px;'>Berdasarkan performa akademik dan informasi pribadi mahasiswa</p>", unsafe_allow_html=True)
+st.markdown("""
+    <div style='text-align: center;'>
+        <h1>🎓 Prediksi Kelulusan Mahasiswa</h1>
+        <p style='font-size:18px;'>Menggunakan model <strong>Machine Learning</strong> berbasis performa akademik dan data pribadi mahasiswa</p>
+    </div>
+""", unsafe_allow_html=True)
 
 # --- Load Data ---
 data = pd.read_excel("Kelulusan Train.xlsx")
@@ -49,32 +53,58 @@ akurasi = accuracy_score(y_test, y_pred)
 
 # --- Sidebar ---
 st.sidebar.header("🔍 Navigasi")
-section = st.sidebar.radio("Pilih Halaman", ["Dataset", "Visualisasi", "Prediksi", "Evaluasi Model"])
+section = st.sidebar.radio("Pilih Halaman", ["🏠 Tentang Aplikasi", "📁 Dataset", "📊 Visualisasi", "🧠 Prediksi", "📈 Evaluasi Model"])
+st.sidebar.markdown("---")
+st.sidebar.metric("🎯 Akurasi Model", f"{akurasi * 100:.2f}%")
+
+# --- Tentang Aplikasi ---
+if section == "🏠 Tentang Aplikasi":
+    st.subheader("📘 Tentang Aplikasi")
+    st.markdown("""
+    Aplikasi ini menggunakan teknologi **Artificial Intelligence (AI)**, khususnya algoritma *Random Forest Classifier*, 
+    untuk memprediksi **kelulusan mahasiswa** berdasarkan data akademik seperti IPS dan IPK serta data pribadi seperti umur, jenis kelamin, dan status pernikahan.
+
+    **Fitur Aplikasi:**
+    - Menampilkan dataset mahasiswa
+    - Visualisasi data kelulusan
+    - Prediksi status kelulusan: *Tepat* atau *Terlambat*
+    - Evaluasi kinerja model (akurasi, confusion matrix, dll)
+    - Analisis korelasi antar fitur
+
+    🛠️ Dikembangkan dengan Python & Streamlit.
+    """)
 
 # --- Dataset View ---
-if section == "Dataset":
+elif section == "📁 Dataset":
     st.subheader("📁 Dataset Awal")
     st.dataframe(data.head(), use_container_width=True)
     st.markdown(f"<div style='margin-top:10px;'>Jumlah Data: <strong>{data.shape[0]}</strong> baris</div>", unsafe_allow_html=True)
 
 # --- Visualisasi ---
-elif section == "Visualisasi":
+elif section == "📊 Visualisasi":
     st.subheader("📊 Visualisasi Kelulusan Mahasiswa")
     col1, col2 = st.columns(2)
     with col1:
-        st.write("Distribusi Status Kelulusan")
+        st.markdown("#### 📌 Distribusi Status Kelulusan")
         fig1, ax1 = plt.subplots()
-        sns.countplot(x="STATUS KELULUSAN", data=data, ax=ax1, palette="pastel")
+        sns.countplot(x="STATUS KELULUSAN", data=data, ax=ax1, palette="Set2")
+        ax1.set_xlabel("Status Kelulusan")
+        ax1.set_ylabel("Jumlah")
         st.pyplot(fig1)
+
     with col2:
-        st.write("Sebaran IPK berdasarkan Status Kelulusan")
+        st.markdown("#### 📌 Sebaran IPK Berdasarkan Kelulusan")
         fig2, ax2 = plt.subplots()
-        sns.boxplot(x="STATUS KELULUSAN", y="IPK", data=data, palette="Set2")
+        sns.boxplot(x="STATUS KELULUSAN", y="IPK", data=data, palette="Set3")
+        ax2.set_xlabel("Status Kelulusan")
+        ax2.set_ylabel("IPK")
         st.pyplot(fig2)
 
 # --- Prediksi ---
-elif section == "Prediksi":
+elif section == "🧠 Prediksi":
     st.subheader("🧠 Formulir Prediksi Kelulusan")
+    st.markdown("Silakan isi data mahasiswa untuk memprediksi kelulusan:")
+
     with st.form("prediction_form"):
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -105,17 +135,26 @@ elif section == "Prediksi":
             input_scaled = scaler.transform(input_data)
             hasil = model.predict(input_scaled)
             label_hasil = le_kelulusan.inverse_transform(hasil)
-            st.success(f"📢 Prediksi Kelulusan Mahasiswa: **{label_hasil[0]}**")
+            hasil_prediksi = label_hasil[0]
+
+            if hasil_prediksi.lower() == "tepat":
+                st.success(f"📢 Prediksi Kelulusan Mahasiswa: **{hasil_prediksi}**")
+                st.markdown("✅ Mahasiswa diprediksi akan **lulus tepat waktu**. Ini menunjukkan performa akademik yang stabil dan konsisten. 💪")
+            elif hasil_prediksi.lower() == "terlambat":
+                st.error(f"📢 Prediksi Kelulusan Mahasiswa: **{hasil_prediksi}**")
+                st.markdown("⚠️ Mahasiswa diprediksi akan **lulus terlambat**. Diperlukan perhatian terhadap studi dan manajemen waktu.")
+            else:
+                st.info(f"📢 Prediksi Kelulusan Mahasiswa: **{hasil_prediksi}**")
 
 # --- Evaluasi Model ---
-elif section == "Evaluasi Model":
+elif section == "📈 Evaluasi Model":
     st.subheader("📈 Evaluasi Kinerja Model")
-    st.markdown(f"**Akurasi Model:** `{akurasi * 100:.2f}%`")
 
+    st.markdown(f"**🎯 Akurasi Model:** `{akurasi * 100:.2f}%`")
     if akurasi == 1.0:
         st.warning("⚠️ Akurasi 100% terdeteksi. Ini bisa jadi indikasi overfitting.")
 
-    st.subheader("📌 Confusion Matrix")
+    st.markdown("#### Confusion Matrix")
     cm = confusion_matrix(y_test, y_pred)
     fig3, ax3 = plt.subplots()
     sns.heatmap(cm, annot=True, fmt="d", cmap="Blues")
@@ -123,11 +162,11 @@ elif section == "Evaluasi Model":
     plt.ylabel("Aktual")
     st.pyplot(fig3)
 
-    st.subheader("📋 Classification Report")
+    st.markdown("#### Classification Report")
     report = classification_report(y_test, y_pred, target_names=le_kelulusan.classes_, output_dict=False)
     st.text(report)
 
-    st.subheader("🔍 Feature Importance")
+    st.markdown("#### Feature Importance")
     importances = model.feature_importances_
     feat_df = pd.DataFrame({"Fitur": fitur, "Pentingnya": importances})
     feat_df = feat_df.sort_values(by="Pentingnya", ascending=False)
@@ -135,6 +174,11 @@ elif section == "Evaluasi Model":
     sns.barplot(data=feat_df, x="Pentingnya", y="Fitur", palette="viridis")
     st.pyplot(fig4)
 
-# --- Sidebar Metric ---
-st.sidebar.markdown("---")
-st.sidebar.metric("🎯 Akurasi Model", f"{akurasi * 100:.2f}%")
+    st.markdown("#### Korelasi Antar Fitur (Heatmap)")
+    fig_corr, ax_corr = plt.subplots(figsize=(10, 6))
+    corr_matrix = data_encoded[fitur].corr()
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', vmin=-1, vmax=1, center=0,
+                fmt=".2f", square=True, linewidths=.5, cbar_kws={"shrink": .75}, ax=ax_corr)
+    plt.xticks(rotation=45, ha='right')
+    plt.yticks(rotation=0)
+    st.pyplot(fig_corr)
